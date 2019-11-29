@@ -60,6 +60,8 @@ function woocommerce_razorpay_init()
             'order_success_message',
             'enable_webhook',
             'webhook_secret',
+            'offer_id',
+            'enable_offers'
         );
 
         public $form_fields = array();
@@ -232,6 +234,18 @@ function woocommerce_razorpay_init()
                     'type' => 'text',
                     'description' => __('Webhook secret is used for webhook signature verification. This has to match the one added <a href="https://dashboard.razorpay.com/#/app/webhooks">here</a>', $this->id),
                     'default' => ''
+                ),
+                'enable_offers' => array(
+                    'title' => __('Enable Offers', $this->id),
+                    'type' => 'checkbox',
+                    'description' =>  "Only Check this if you have received offer id from razorpay",
+                    'label' => __('Enable Razorpay Offers', $this->id),
+                    'default' => 'no'
+                ),
+                'offer_id' => array(
+                    'title' => __('Offer IDs', $this->id),
+                    'type' => 'text',
+                    'description' => __('Enter Offer ID received from RazorPay. use comma(,) seperator for multiple offer ids', $this->id)
                 ),
             );
 
@@ -565,6 +579,11 @@ function woocommerce_razorpay_init()
                     self::WC_ORDER_ID  => (string) $orderId,
                 ),
             );
+
+            if($this->getSetting('enable_offers') && $this->getSetting('offer_id') != ''){
+                $data['discount'] = 1 ;
+                $data['offers'] = explode(',',$this->getSetting('offer_id'));
+            }
 
             return $data;
         }
